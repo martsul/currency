@@ -2,7 +2,10 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CurrencyRate } from './entities/currenct-rate.entity';
 import { Repository } from 'typeorm';
-import { CoingeckoRates } from './providers/coingecko-rates.provider';
+import { CoingeckoProvider } from './providers/coingecko.provider';
+import { CoinmarketcapProvider } from './providers/coinmarketcap.provider';
+import { CurrencyData } from 'src/common/types/currency-data.type';
+// import { AlphavantageProvider } from './providers/alphavantage.provider';
 
 @Injectable()
 export class CurrencyService {
@@ -11,6 +14,9 @@ export class CurrencyService {
   constructor(
     @InjectRepository(CurrencyRate)
     private currencyRepo: Repository<CurrencyRate>,
+    // private readonly alphavantageProvider: AlphavantageProvider,
+    private readonly coinmarketcapProvider: CoinmarketcapProvider,
+    private readonly coingeckoProvider: CoingeckoProvider,
   ) {}
 
   async saveRate(from: string, to: string, rate: number) {
@@ -20,7 +26,10 @@ export class CurrencyService {
   }
 
   async fetchRates() {
-    const coingeckoRates = await new CoingeckoRates().get();
-    return coingeckoRates;
+    // const alphavantageRates: CurrencyData | null = await this.alphavantageProvider.get();
+    const coinmarketcapRates = await this.coinmarketcapProvider.get();
+    const coingeckoRates: Partial<CurrencyData> | null =
+      await this.coingeckoProvider.get();
+    return { coingeckoRates };
   }
 }
