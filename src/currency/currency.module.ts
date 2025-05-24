@@ -1,20 +1,17 @@
 import { Module } from '@nestjs/common';
 import { CurrencyService } from './currency.service';
-import { CurrencyController } from './currency.controller';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { CurrencyRate } from './entities/currenct-rate.entity';
-import { CoingeckoProvider } from './providers/coingecko.provider';
-import { AlphavantageProvider } from './providers/alphavantage.provider';
-import { CoinmarketcapProvider } from './providers/coinmarketcap.provider';
+import { InjectRepository, TypeOrmModule } from '@nestjs/typeorm';
+import { CurrencyRate } from 'src/rates/entities/currency-rate.entity';
+import { Repository } from 'typeorm';
 
 @Module({
   imports: [TypeOrmModule.forFeature([CurrencyRate])],
-  controllers: [CurrencyController],
-  providers: [
-    CurrencyService,
-    CoingeckoProvider,
-    AlphavantageProvider,
-    CoinmarketcapProvider,
-  ],
+  providers: [CurrencyService],
+  exports: [CurrencyService],
 })
-export class CurrencyModule {}
+export class CurrencyModule {
+  constructor(
+    @InjectRepository(CurrencyRate)
+    private currencyRepo: Repository<CurrencyRate>,
+  ) {}
+}

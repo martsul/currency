@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
-import { CurrencyModule } from './currency/currency.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ScheduleModule } from '@nestjs/schedule';
+import { RatesModule } from './rates/rates.module';
+import { AggregatorModule } from './aggregator/aggregator.module';
 
 @Module({
   imports: [
@@ -16,7 +18,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true, // TERN OFF
     }),
-    CurrencyModule,
+    ScheduleModule.forRoot(),
+    RatesModule,
+    AggregatorModule,
   ],
 })
 export class AppModule {}

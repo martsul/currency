@@ -5,4 +5,4 @@ export type ShortCoinsNames =
   | 'xmr'
   | 'sol'
   | 'usdt'
-  | 'tron';
+  | 'trx';

@@ -13,7 +13,7 @@ const coinFormat: Record<FullCoinsNames, ShortCoinsNames> = {
   monero: 'xmr',
   solana: 'sol',
   tether: 'usdt',
-  tron: 'tron',
+  tron: 'trx',
 };
 
 type ResponseData = Record<
