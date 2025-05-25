@@ -1,17 +1,12 @@
 import { Module } from '@nestjs/common';
 import { CurrencyService } from './currency.service';
-import { InjectRepository, TypeOrmModule } from '@nestjs/typeorm';
-import { CurrencyRate } from 'src/rates/entities/currency-rate.entity';
-import { Repository } from 'typeorm';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Rates } from 'src/entities/rates.entity';
+import { Settings } from 'src/entities/settings.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([CurrencyRate])],
+  imports: [TypeOrmModule.forFeature([Rates, Settings])],
   providers: [CurrencyService],
   exports: [CurrencyService],
 })
-export class CurrencyModule {
-  constructor(
-    @InjectRepository(CurrencyRate)
-    private currencyRepo: Repository<CurrencyRate>,
-  ) {}
-}
+export class CurrencyModule {}
