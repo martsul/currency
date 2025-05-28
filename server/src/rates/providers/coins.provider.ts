@@ -1,23 +1,41 @@
+import { CoinFiat } from 'src/common/types/coin-fiat.type';
 import { CurrencyData } from 'src/common/types/currency-data.type';
+import { FiatCoin } from 'src/common/types/fiat-coin.type';
 import { ShortCoinsNames } from 'src/common/types/short-coins-manes.type';
 import { ShortFiatsNames } from 'src/common/types/short-fiats-names.type';
 
 export class CoinsProvider {
   protected countAllRates(
-    coinFiatRates: Partial<CurrencyData>,
+    coinFiatRates: Partial<CoinFiat>,
   ): Partial<CurrencyData> {
-    const allRates = { ...coinFiatRates };
-    const fiats = Object.keys(coinFiatRates);
-    fiats.forEach((fiat, i) => {
-      for (let j = i + 1; j < fiats.length; j++) {
-        this.countRates(
-          allRates,
-          fiat as ShortCoinsNames,
-          fiats[j] as ShortCoinsNames,
-        );
+    const coinFiat = { ...coinFiatRates };
+    const fiatCoin = this.countFiatCoin(coinFiat);
+    const coins = Object.keys(coinFiat) as ShortCoinsNames[];
+    coins.forEach((coin, i) => {
+      for (let j = i + 1; j < coins.length; j++) {
+        this.countRates(coinFiat, coin, coins[j]);
       }
     });
-    return allRates;
+    return { ...coinFiat, ...fiatCoin };
+  }
+
+  private countFiatCoin(coinFiat: Partial<CoinFiat>): Partial<FiatCoin> {
+    const fiatCoin: Partial<FiatCoin> = {};
+    const coins = Object.keys(coinFiat) as ShortCoinsNames[];
+    for (const coin of coins) {
+      const fiatRates = coinFiat[coin];
+      if (!fiatRates) continue;
+      for (const fiat of Object.keys(fiatRates) as ShortFiatsNames[]) {
+        const price = fiatRates[fiat];
+        if (price === undefined || price === 0) continue;
+        if (!fiatCoin[fiat]) {
+          fiatCoin[fiat] = {};
+        }
+        fiatCoin[fiat][coin] = 1 / price;
+      }
+    }
+
+    return fiatCoin;
   }
 
   private countRates(

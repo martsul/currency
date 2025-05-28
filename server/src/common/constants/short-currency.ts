@@ -1,0 +1,17 @@
+export const SHORT_CURRENCY = new Set([
+  'btc',
+  'eth',
+  'sol',
+  'xmr',
+  'ltc',
+  'usdt',
+  'trx',
+  'usd',
+  'eur',
+  'rub',
+  'kzt',
+  'uah',
+  'ngn',
+  'cny',
+  'brl',
+]);
