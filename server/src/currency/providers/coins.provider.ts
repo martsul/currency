@@ -1,5 +1,6 @@
 import { CoinFiat } from 'src/common/types/coin-fiat.type';
 import { CurrencyData } from 'src/common/types/currency-data.type';
+import { Currency } from 'src/common/types/currency.type';
 import { FiatCoin } from 'src/common/types/fiat-coin.type';
 import { ShortCoinsNames } from 'src/common/types/short-coins-manes.type';
 import { ShortFiatsNames } from 'src/common/types/short-fiats-names.type';
@@ -58,7 +59,7 @@ export class CoinsProvider {
     value: number,
   ): void {
     if (!rates[from]) {
-      rates[from] = {} as Record<ShortFiatsNames | ShortCoinsNames, number>;
+      rates[from] = {} as Record<Currency, number>;
     }
     rates[from][to] = value;
   }

@@ -3,8 +3,8 @@ import axios from 'axios';
 import { CurrencyData } from 'src/common/types/currency-data.type';
 import { FullCoinsNames } from 'src/common/types/full-coins-names.type';
 import { ShortCoinsNames } from 'src/common/types/short-coins-manes.type';
-import { ShortFiatsNames } from 'src/common/types/short-fiats-names.type';
 import { CoinsProvider } from './coins.provider';
+import { Currency } from 'src/common/types/currency.type';
 
 const coinFormat: Record<FullCoinsNames, ShortCoinsNames> = {
   bitcoin: 'btc',
@@ -16,10 +16,7 @@ const coinFormat: Record<FullCoinsNames, ShortCoinsNames> = {
   tron: 'trx',
 };
 
-type ResponseData = Record<
-  FullCoinsNames,
-  Record<ShortFiatsNames | ShortCoinsNames, number>
->;
+type ResponseData = Record<FullCoinsNames, Record<Currency, number>>;
 
 @Injectable()
 export class CoingeckoProvider extends CoinsProvider {

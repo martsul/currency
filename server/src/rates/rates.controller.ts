@@ -6,13 +6,21 @@ export class RatesController {
   constructor(private readonly ratesService: RatesService) {}
 
   @Get()
-  getRates() {
-    return this.ratesService.getAll();
+  async getRates() {
+    return await this.ratesService.getAll();
   }
 
   @Get(':from/:to')
-  getRate(@Param('from') from: string, @Param('to') to: string) {
-    const data = this.ratesService.getOne();
-    return { ...data, from, to };
+  async getPair(@Param('from') from: string, @Param('to') to: string) {
+    return await this.ratesService.getPair(from, to);
+  }
+
+  @Get('/fiat')
+  async getFiat() {
+    return await this.ratesService.getFiat();
+  }
+  @Get('/coins')
+  async getCoins() {
+    return await this.ratesService.getCoins();
   }
 }

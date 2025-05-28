@@ -1,11 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ALL_COINS } from 'src/common/constants/all-coins';
+import { ALL_FIAT } from 'src/common/constants/all-fiat';
 import { initialRates } from 'src/common/constants/initil-rates.constant';
 import { CurrencyData } from 'src/common/types/currency-data.type';
 import { UpdateRate } from 'src/common/types/update-rate.type';
 import { Rates } from 'src/entities/rates.entity';
 import { Settings } from 'src/entities/settings.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 
 type RatesFromTo = Record<string, number>;
 
@@ -74,15 +76,7 @@ export class CurrencyService {
     }
   }
 
-  getAll() {
-    return { data: 'all' };
-  }
-
-  getOne() {
-    return { data: 'one' };
-  }
-
-  async save(rates: Partial<CurrencyData>) {
+  async saveRates(rates: Partial<CurrencyData>) {
     await this.setOldRates();
     const maxDif = await this.settingsRepo.findOne({
       where: { name: 'dif_percent' },
@@ -92,6 +86,64 @@ export class CurrencyService {
       Number(maxDif?.value) || 100,
     );
     await this.saveQuery(convertedRates);
+  }
+
+  async getAllPairsAndSettings() {
+    return await Promise.all([this.queryRates(), this.queryCurrencySettings()]);
+  }
+
+  async getPairAndSettings(from: string[], to: string[]) {
+    return await Promise.all([
+      this.queryPairs(from, to),
+      this.queryCurrencySettings(),
+    ]);
+  }
+
+  async getFiatRates() {
+    return await Promise.all([
+      this.queryFiatRates(),
+      this.queryCurrencySettings(),
+    ]);
+  }
+  async getCoinsRates() {
+    return await Promise.all([
+      this.queryCoinsRates(),
+      this.queryCurrencySettings(),
+    ]);
+  }
+
+  private async queryCoinsRates() {
+    return this.ratesRepo.find({
+      where: { from: In(Array.from(ALL_COINS)), to: In(Array.from(ALL_COINS)) },
+    });
+  }
+
+  private async queryFiatRates() {
+    return this.ratesRepo.find({
+      where: [
+        { from: In(Array.from(ALL_FIAT)) },
+        { to: In(Array.from(ALL_FIAT)) },
+      ],
+    });
+  }
+
+  private async queryRates() {
+    return await this.ratesRepo.find();
+  }
+
+  private async queryPairs(from: string[], to: string[]) {
+    return await this.ratesRepo.find({
+      where: {
+        from: In([...from, ...to]),
+        to: In([...from, ...to]),
+      },
+    });
+  }
+
+  private async queryCurrencySettings() {
+    return await this.settingsRepo.find({
+      where: { name: In(['coin_coin_percent', 'coin_fiat_percent']) },
+    });
   }
 
   private async saveQuery(rates: UpdateRate[]) {

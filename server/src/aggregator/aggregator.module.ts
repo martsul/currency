@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { AggregatorService } from './aggregator.service';
 import { CurrencyModule } from 'src/currency/currency.module';
-import { CoingeckoProvider } from 'src/rates/providers/coingecko.provider';
-import { CoinmarketcapProvider } from 'src/rates/providers/coinmarketcap.provider';
+import { CoingeckoProvider } from 'src/currency/providers/coingecko.provider';
+import { CoinmarketcapProvider } from 'src/currency/providers/coinmarketcap.provider';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Settings } from 'src/entities/settings.entity';
 

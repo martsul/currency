@@ -1,7 +1,3 @@
-import { ShortCoinsNames } from './short-coins-manes.type';
-import { ShortFiatsNames } from './short-fiats-names.type';
+import { Currency } from './currency.type';
 
-export type CurrencyData = Record<
-  ShortCoinsNames | ShortFiatsNames,
-  Partial<Record<ShortCoinsNames | ShortFiatsNames, number>>
->;
+export type CurrencyData = Record<Currency, Partial<Record<Currency, number>>>;
