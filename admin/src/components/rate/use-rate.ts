@@ -25,7 +25,9 @@ export const useRate = (rate: RateDTO) => {
     const handlerStaticRate = (value: string) => {
         setValues(
             produce((draft) => {
-                draft.staticRate = value;
+                if (!isNaN(+value) || value === "") {
+                    draft.staticRate = value;
+                }
             })
         );
     };

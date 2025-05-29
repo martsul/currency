@@ -1,8 +1,5 @@
 import type { RateDTO } from "../../types/rate-dto";
-import { Button, Form } from "react-bootstrap";
-import { TypePrice } from "../type-price/type-price";
-import { StaticPrice } from "../static-price/static-price";
-import { PercentPrice } from "../percent-price/percent-price";
+import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import type { FC } from "react";
 import { useRate } from "./use-rate";
 
@@ -21,40 +18,78 @@ export const Rate: FC<Props> = ({ rate }) => {
     } = useRate(rate);
 
     return (
-        <Form
-            className="d-flex flex-column gap-3 h-100 justify-content-between"
-            onSubmit={(e) => {
-                e.preventDefault();
-                saveValues();
-            }}
-        >
-            <div className="d-flex flex-column gap-3">
-                <h4>{`${rate.from}/${rate.to}`}</h4>
-                <p className="m-0">
-                    The exchange price: <strong>{rate.rate}</strong>
-                </p>
-                <TypePrice
-                    handlerChange={handlerTypePrice}
-                    type={values.typePrice}
+        <tr>
+            <td>{`${rate.from}/${rate.to}`}</td>
+            <td>{rate.rate}</td>
+            <td>
+                <input
+                    type="radio"
+                    onChange={() => handlerTypePrice("market")}
+                    checked={values.typePrice === "market"}
                 />
-                {values.typePrice === "static" && (
-                    <StaticPrice
+            </td>
+            <td>
+                <input
+                    type="radio"
+                    onChange={() => handlerTypePrice("static")}
+                    checked={values.typePrice === "static"}
+                />
+            </td>
+            <td>
+                <input
+                    type="radio"
+                    onChange={() => handlerTypePrice("percent")}
+                    checked={values.typePrice === "percent"}
+                />
+            </td>
+            <td>
+                <input
+                    type="text"
+                    disabled={values.typePrice === "market"}
+                    value={
+                        values.typePrice === "percent"
+                            ? values.percent || ""
+                            : values.typePrice === "static"
+                            ? values.staticRate || ""
+                            : ""
+                    }
+                    onChange={(e) => {
+                        if (values.typePrice === "percent") {
+                            handlerPercent(e.target.value);
+                        } else if (values.typePrice === "static") {
+                            handlerStaticRate(e.target.value);
+                        }
+                    }}
+                />
+            </td>
+            <td>
+                <div>
+                    <input
+                        disabled={values.typePrice !== "static"}
+                        type="checkbox"
                         checked={values.isAffect}
-                        value={values.staticRate || ""}
-                        handlerChangeCheck={handlerIsAffect}
-                        handlerChangeInput={handlerStaticRate}
+                        onChange={(e) => handlerIsAffect(e.target.checked)}
                     />
+                </div>
+            </td>
+            <td>
+                <Button onClick={saveValues}>Save</Button>
+            </td>
+            <td>
+                {rate.error && (
+                    <OverlayTrigger overlay={<Tooltip>{rate.error}</Tooltip>}>
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            height="24px"
+                            viewBox="0 -960 960 960"
+                            width="24px"
+                            fill="#EA3323"
+                        >
+                            <path d="m40-120 440-760 440 760H40Zm138-80h604L480-720 178-200Zm302-40q17 0 28.5-11.5T520-280q0-17-11.5-28.5T480-320q-17 0-28.5 11.5T440-280q0 17 11.5 28.5T480-240Zm-40-120h80v-200h-80v200Zm40-100Z" />
+                        </svg>
+                    </OverlayTrigger>
                 )}
-                {values.typePrice === "percent" && (
-                    <PercentPrice
-                        value={values.percent || ""}
-                        handlerChange={handlerPercent}
-                    />
-                )}
-            </div>
-            <Button type="submit" className="mb-4" variant="secondary">
-                Save
-            </Button>
-        </Form>
+            </td>
+        </tr>
     );
 };
