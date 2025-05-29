@@ -74,6 +74,7 @@ export class RatesService {
     to: string,
   ) {
     const { currentPair, otherPair } = this.findPairs(pairs, from, to);
+    if (currentPair.typePrice === 'static') return currentPair.staticRate;
     if (currentPair.error) return currentPair.error;
     const settingsPercent = this.countSettingsPercent(from, to, settings);
     const rateByOtherPair = this.handlerOtherPair(otherPair);
@@ -89,14 +90,11 @@ export class RatesService {
     rateByOtherPair: number,
     settingsPercent: number,
   ) {
-    const { typePrice } = currentPair;
     const percent =
       currentPair.typePrice === 'percent'
         ? 1 + (currentPair.percent || 0) / 100
         : 1 + (settingsPercent || 0) / 100;
-    if (typePrice === 'static') {
-      return +currentPair.staticRate;
-    } else if (Number.isNaN(rateByOtherPair)) {
+    if (Number.isNaN(rateByOtherPair)) {
       return currentPair.rate * percent;
     } else {
       return rateByOtherPair * percent;
