@@ -72,6 +72,17 @@ Returns only the rates where the base currency is a cryptocurrency.
 
 ---
 
+## 🔐 Admin Panel
+
+The admin panel is available for managing currency rates and system settings.
+
+- **Username:** `admin`
+- **Password:** `admin`
+
+> ⚠️ Make sure to change the default credentials in production environments.
+
+---
+
 ## 📌 Format Notes
 
 - All rates are returned as key-value pairs in the `{base}/{quote}: rate` format.
