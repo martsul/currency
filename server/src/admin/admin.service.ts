@@ -32,7 +32,7 @@ export class AdminService {
   }
 
   private async getRates() {
-    return await this.ratesRepo.find();
+    return await this.ratesRepo.find({ order: { from: 'ASC' } });
   }
 
   private async getSettings() {
