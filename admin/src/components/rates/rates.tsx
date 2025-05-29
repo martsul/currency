@@ -1,4 +1,4 @@
-import { useState, type FC } from "react";
+import { useEffect, useState, type FC } from "react";
 import type { RateDTO } from "../../types/rate-dto";
 import { Rate } from "../rate/rate";
 import { Form, Table } from "react-bootstrap";
@@ -9,12 +9,16 @@ export const Rates: FC<Props> = ({ rates }) => {
     const [filteredRates, setFilteredRates] = useState([...rates]);
     const [searchValue, setSearchValue] = useState("");
 
+    useEffect(() => {
+        setFilteredRates([...rates]);
+    }, [rates]);
+
     return (
         <section>
             <h2 className="mb-5">Rates</h2>
             <span className="fs-4">Search</span>
             <Form.Control
-            className="mb-4"
+                className="mb-4"
                 value={searchValue}
                 onChange={(e) => {
                     const value = e.target.value;
