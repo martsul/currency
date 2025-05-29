@@ -1,4 +1,6 @@
-export const ALL_FIAT = new Set([
+import { ShortFiatsNames } from '../types/short-fiats-names.type';
+
+export const ALL_FIAT: Set<ShortFiatsNames> = new Set([
   'usd',
   'eur',
   'rub',

@@ -5,4 +5,5 @@ export type ShortFiatsNames =
   | 'uah'
   | 'ngn'
   | 'cny'
-  | 'brl';
+  | 'brl'
+  | 'kzt';

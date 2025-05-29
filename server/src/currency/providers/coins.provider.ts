@@ -32,7 +32,10 @@ export class CoinsProvider {
         if (!fiatCoin[fiat]) {
           fiatCoin[fiat] = {};
         }
-        fiatCoin[fiat][coin] = 1 / price;
+        const cost = 1 / price;
+        if (cost) {
+          fiatCoin[fiat][coin] = cost;
+        }
       }
     }
 
@@ -61,6 +64,8 @@ export class CoinsProvider {
     if (!rates[from]) {
       rates[from] = {} as Record<Currency, number>;
     }
-    rates[from][to] = value;
+    if (value) {
+      rates[from][to] = value;
+    }
   }
 }

@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { ALL_COINS } from 'src/common/constants/all-coins';
 import { Currency } from 'src/common/types/currency.type';
+import { ShortCoinsNames } from 'src/common/types/short-coins-manes.type';
 import { CurrencyService } from 'src/currency/currency.service';
 import { Rates } from 'src/entities/rates.entity';
 import { Settings } from 'src/entities/settings.entity';
@@ -73,6 +74,7 @@ export class RatesService {
     to: string,
   ) {
     const { currentPair, otherPair } = this.findPairs(pairs, from, to);
+    if (currentPair.error) return currentPair.error;
     const settingsPercent = this.countSettingsPercent(from, to, settings);
     const rateByOtherPair = this.handlerOtherPair(otherPair);
     return this.getOwnRate(
@@ -120,7 +122,10 @@ export class RatesService {
   }
 
   private checkIsCoinCoinRate(from: string, to: string) {
-    return ALL_COINS.has(from) && ALL_COINS.has(to);
+    return (
+      ALL_COINS.has(from as ShortCoinsNames) &&
+      ALL_COINS.has(to as ShortCoinsNames)
+    );
   }
 
   private findPairs(pairs: Rates[], from: string, to: string) {

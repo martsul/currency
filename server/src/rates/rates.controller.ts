@@ -23,4 +23,7 @@ export class RatesController {
   async getCoins() {
     return await this.ratesService.getCoins();
   }
+
+  @Get('/test')
+  async test() {}
 }
