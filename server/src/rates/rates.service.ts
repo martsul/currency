@@ -1,9 +1,12 @@
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import {
+  Inject,
   Injectable,
   InternalServerErrorException,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
+import { Cache } from 'cache-manager';
 import { ALL_COINS } from 'src/common/constants/all-coins';
 import { Currency } from 'src/common/types/currency.type';
 import { ShortCoinsNames } from 'src/common/types/short-coins-manes.type';
@@ -15,9 +18,16 @@ import { Settings } from 'src/entities/settings.entity';
 export class RatesService {
   private readonly logger = new Logger(RatesService.name);
 
-  constructor(private currencyService: CurrencyService) {}
+  constructor(
+    private currencyService: CurrencyService,
+    @Inject(CACHE_MANAGER) private cache: Cache,
+  ) {}
 
   async getAll() {
+    const cache = await this.getCache('*');
+    if (cache) {
+      return cache as Partial<Record<Currency, number>>;
+    }
     const [pairs, settings] =
       await this.currencyService.getAllPairsAndSettings();
     const result: Partial<Record<Currency, number>> = {};
@@ -25,30 +35,45 @@ export class RatesService {
       const rate = this.countPair(pairs, settings, pair.from, pair.to);
       result[`${pair.from}/${pair.to}`] = rate;
     });
+    await this.setInCache('*', result);
     return result;
   }
 
   async getFiat() {
+    const cache = await this.getCache('fiat');
+    if (cache) {
+      return cache as Partial<Record<Currency, number>>;
+    }
     const [pairs, settings] = await this.currencyService.getFiatRates();
     const result: Partial<Record<Currency, number>> = {};
     pairs.forEach((pair) => {
       const rate = this.countPair(pairs, settings, pair.from, pair.to);
       result[`${pair.from}/${pair.to}`] = rate;
     });
+    await this.setInCache('fiat', result);
     return result;
   }
 
   async getCoins() {
+    const cache = await this.getCache('coins');
+    if (cache) {
+      return cache as Partial<Record<Currency, number>>;
+    }
     const [pairs, settings] = await this.currencyService.getCoinsRates();
     const result: Partial<Record<Currency, number>> = {};
     pairs.forEach((pair) => {
       const rate = this.countPair(pairs, settings, pair.from, pair.to);
       result[`${pair.from}/${pair.to}`] = rate;
     });
+    await this.setInCache('fiat', result);
     return result;
   }
 
   async getPair(from: string, to: string) {
+    const cache = await this.getCache(from + to);
+    if (cache) {
+      return cache as Partial<Record<Currency, number>>;
+    }
     const fromValues = from.split(',');
     const toValues = to.split(',');
     const result: Partial<Record<Currency, number>> = {};
@@ -64,7 +89,19 @@ export class RatesService {
         }
       });
     });
+    await this.setInCache(from + to, result);
     return result;
+  }
+
+  private async getCache(key: string) {
+    return await this.cache.get(key);
+  }
+
+  private async setInCache(
+    key: string,
+    result: Partial<Record<Currency, number>>,
+  ) {
+    await this.cache.set(key, result, 300000);
   }
 
   private countPair(

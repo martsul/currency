@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CurrencyData } from 'src/common/types/currency-data.type';
@@ -13,6 +13,8 @@ import { Currency } from 'src/common/types/currency.type';
 import { TatumProvider } from 'src/currency/providers/tatum.provider';
 import { CoinbaseProvider } from 'src/currency/providers/coinbase.provider';
 import { BinanceProvider } from 'src/currency/providers/binance.provider';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 type Rates = Record<Currency, number[]>;
 
@@ -31,6 +33,7 @@ export class AggregatorService {
     private readonly currencyService: CurrencyService,
     @InjectRepository(Settings)
     private settingsRepo: Repository<Settings>,
+    @Inject(CACHE_MANAGER) private cache: Cache,
   ) {}
 
   private async onModuleInit() {
@@ -45,6 +48,7 @@ export class AggregatorService {
     const crudRates = await this.queryRates();
     const countedRates = await this.countRates(crudRates);
     await this.currencyService.saveRates(countedRates);
+    await this.cache.clear();
     this.logger.log('Rates Updated');
   }
 

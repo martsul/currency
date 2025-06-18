@@ -1,5 +1,7 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Cache } from 'cache-manager';
 import { Rates } from 'src/entities/rates.entity';
 import { Settings } from 'src/entities/settings.entity';
 import { Repository } from 'typeorm';
@@ -13,6 +15,7 @@ export class AdminService {
     private ratesRepo: Repository<Rates>,
     @InjectRepository(Settings)
     private settingsRepo: Repository<Settings>,
+    @Inject(CACHE_MANAGER) private cache: Cache,
   ) {}
 
   async getAllData() {
@@ -24,10 +27,12 @@ export class AdminService {
   }
 
   async updateRate(rates: Rates) {
+    await this.cache.clear();
     return await this.ratesRepo.update({ id: rates.id }, rates);
   }
 
   async updateSettings(settings: Settings) {
+    await this.cache.clear();
     return await this.settingsRepo.update({ id: settings.id }, settings);
   }
 

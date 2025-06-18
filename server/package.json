@@ -20,6 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@nestjs/cache-manager": "^3.0.1",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
@@ -27,11 +28,13 @@
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/schedule": "^6.0.0",
     "@nestjs/terminus": "^11.0.0",
+    "@nestjs/throttler": "^6.4.0",
     "@nestjs/typeorm": "^11.0.0",
     "@tatumio/tatum": "^4.2.51",
     "axios": "^1.9.0",
     "bcrypt": "^5.1.1",
     "bcrypt-ts": "^6.0.0",
+    "cache-manager": "^7.0.0",
     "express-formidable": "^1.2.0",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.14.1",
